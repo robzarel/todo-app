@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 
@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { setupTodos, updateTodoStatus } from '../../redux/slices/todos';
 
 import List from '../../components/todoList';
+import Modal from '../../components/modal';
 
 const Wrapper = styled.div`
     text-align: center;
@@ -18,8 +19,13 @@ const Wrapper = styled.div`
     font-size: calc(10px + 2vmin);
     color: white;
 `
+const ModalTitle = styled.p`
+    color: #fff
+`;
+
 
 function App() {
+    const [isModalOpen, toogleModal] = useState(false);
     const dispatch = useAppDispatch();
     const { todos } = useAppSelector((state) => state.todos);
   
@@ -34,15 +40,28 @@ function App() {
     }, [dispatch, todos.length]);
     
     const changeTodoItemStatus = (id: number, completed: boolean) => {    
+        dispatch(updateTodoStatus({ id, completed }));
+    }
 
-      dispatch(updateTodoStatus({ id, completed }));
-  }
-  
-  return (
-    <Wrapper>
-        <List todos={ todos } onItemClick={ changeTodoItemStatus }/>
-    </Wrapper>
-  );
+    const openModal = () => { toogleModal(true); }
+    const closeModal = () => { toogleModal(false); }
+
+    const renderModal = () => {
+        return (
+            <Modal>
+                <ModalTitle>this is modal window</ModalTitle>
+                <button onClick={ closeModal }>Hide modal</button>
+            </Modal>
+        );
+    }
+
+    return (
+        <Wrapper>
+            <button onClick={ openModal }>show modal</button>
+            { isModalOpen && renderModal() }
+            <List todos={ todos } onItemClick={ changeTodoItemStatus }/>
+        </Wrapper>
+    );
 }
 
 export default App;

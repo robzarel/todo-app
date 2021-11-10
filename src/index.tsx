@@ -5,6 +5,8 @@ import { Provider } from 'react-redux'
 
 import './index.css';
 
+import store from './redux/store';
+
 import reportWebVitals from './reportWebVitals';
 
 import TodosPage from './pages/todos';
@@ -13,8 +15,6 @@ import DashboardPage from './pages/dashboard';
 import NotFountPage from './pages/not-found';
 
 import Navigation from './components/navigation';
-
-import store from './redux/store';
 
 ReactDOM.render(
 	<React.StrictMode>
