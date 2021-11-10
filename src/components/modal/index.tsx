@@ -1,29 +1,60 @@
-import { useEffect } from 'react';
+import { useEffect, KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
+import styled from 'styled-components';
+
 
 import './index.css';
 
-const ROOT_MODAL = document.getElementById('modal-root');
+const ROOT_MODAL_MOUNT_NODE = document.getElementById('modal-root');
 
 interface ModalPropsInterface {
-    children : React.ReactNode
+    children : React.ReactNode,
+    onOverlayClick: () => void
 }
-//todo@lbp: 
-// figure out how to style this modal with styled-components
+
+const ModalWrapper = styled.div`
+    width: 100px;
+    heigth: 100px;
+    background-color: red;
+`;
+
+const ESCAPE_KEY_CODE = 27;
 
 function Modal(props: ModalPropsInterface) {
-    const element = document.createElement('div');
-    element.classList.add('modal-wrapper')
+    const { children, onOverlayClick } = props;
+    const overlay = document.createElement('div');
+    overlay.classList.add('modal-overlay')
+
+/* todo@lbp: 
+    - fix this 'any' shit (figure out how cover with ts keyboard events)
+    - stop event propagation on content wrapper (to avoid modal closing by clicking on modal content)
+*/
+    const handleKeyUp = (event: any) => {
+        console.log(event);
+        console.log(event.code);
+        
+        if (event.keyCode === ESCAPE_KEY_CODE) {
+            onOverlayClick();
+        }
+    }
 
     useEffect(() => {
-        ROOT_MODAL?.appendChild(element);
+        window.addEventListener('keyup', handleKeyUp , false);
+        overlay.addEventListener('click', onOverlayClick, false)
+
+        ROOT_MODAL_MOUNT_NODE?.appendChild(overlay);
 
         return () => {
-            ROOT_MODAL?.removeChild(element);
-        }
-    },[element]);
+            window.removeEventListener('keyup', handleKeyUp , false);
+            overlay.removeEventListener('click', onOverlayClick)
 
-    return createPortal(props.children, element);
+            ROOT_MODAL_MOUNT_NODE?.removeChild(overlay);
+        }
+    },[overlay, onOverlayClick]);
+
+    const content = <ModalWrapper>{ children }</ModalWrapper>
+
+    return createPortal(content, overlay);
 }
 
 export default Modal;

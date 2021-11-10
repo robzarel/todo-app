@@ -46,9 +46,11 @@ function App() {
     const openModal = () => { toogleModal(true); }
     const closeModal = () => { toogleModal(false); }
 
+    const handleOverlayClick = () => { closeModal(); }
+
     const renderModal = () => {
         return (
-            <Modal>
+            <Modal onOverlayClick={ handleOverlayClick } >
                 <ModalTitle>this is modal window</ModalTitle>
                 <button onClick={ closeModal }>Hide modal</button>
             </Modal>
